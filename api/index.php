@@ -64,9 +64,15 @@ $image = $avatar->name( $input->name )
                 ->color( $input->color )
                 ->smooth()
                 ->allowSpecialCharacters( false )
-                ->autoFont()
                 ->keepCase( ! $input->uppercase )
                 ->rounded( $input->rounded );
+
+// autoFont() has no Hangul branch and falls back to OpenSans (no Hangul glyphs); the bundled CJK font covers Hangul.
+if ( \LasseRafn\StringScript::isHangul( $input->initials ) ) {
+	$image = $image->font( __ROOT__ . '/vendor/lasserafn/php-initial-avatar-generator/src/fonts/script/' . ( $input->bold ? 'Noto-CJKjp-Bold.otf' : 'Noto-CJKJP-Regular.otf' ) );
+} else {
+	$image = $image->autoFont();
+}
 
 if ( $input->bold ) {
 	$image = $image->preferBold();
